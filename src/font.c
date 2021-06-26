@@ -5,7 +5,8 @@
 
 // 8x8 font for ASCII 0..127
 
-typedef u8 __glyph[8];
+typedef u8 __glyph_row;
+typedef __glyph_row __glyph[8];
 
 static const __glyph FONT[128] = {
 	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }, // U+0000 (nul)
@@ -138,16 +139,15 @@ static const __glyph FONT[128] = {
 	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }  // U+007F
 };
 
-void font_char(char c, size_t x, size_t y, u8 color) {
+void font_char(char c, size_t sreen_x, size_t screen_y, u8 color) {
 	assert(c >= 0, "INVALID CHARACTER");
 
-	const u8 * glyph = FONT[(size_t) c];
+	const __glyph_row * glyph = FONT[(size_t) c];
 
-	for (size_t yy = 0; yy < 8; yy++) {
-		for (size_t xx = 0; xx < 8; xx++) {
-			if (glyph[yy] & (1 << xx)) {
-				screen_set(color, x + xx, y + yy);
-			}
+	for (size_t font_y = 0; font_y < 8; font_y++) {
+		for (size_t font_x = 0; font_x < 8; font_x++) {
+			if (glyph[font_y] & (1 << font_x))
+				screen_set(color, sreen_x + font_x, screen_y + font_y);
 		}
 	}
 }
